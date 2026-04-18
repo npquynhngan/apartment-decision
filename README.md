@@ -60,9 +60,25 @@ The project is built incrementally. The current commit covers:
 
 ## Deploy
 
-Deployed on Vercel Hobby. Environment variables above must be set in the
-Vercel project. The `main` branch auto-deploys to production; feature
-branches get preview deploys.
+Deployed on Vercel Hobby. One-time setup:
+
+1. In the Vercel dashboard, "Add New… → Project" and import the GitHub
+   repo `npquynhngan/apartment-decision`.
+2. Framework preset: **Next.js** (auto-detected).
+3. Add the environment variables from [`.env.example`](./.env.example) to
+   the Vercel project (Production + Preview).
+
+Once connected, Vercel auto-deploys: every push to `main` goes to
+production, every push to any other branch gets a preview URL. No CLI
+needed — the GitHub → Vercel integration handles it.
+
+## Database
+
+Supabase SQL migrations live in [`supabase/migrations/`](./supabase/migrations).
+Run them in order in the Supabase SQL editor — see
+[`supabase/README.md`](./supabase/README.md) for details. Schema setup
+needs only dashboard access; the app never uses the service-role key
+from the browser.
 
 ## Scripts
 
