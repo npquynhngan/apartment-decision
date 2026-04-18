@@ -16,22 +16,6 @@ as $$
   select upper(substring(encode(gen_random_bytes(6), 'hex') from 1 for 8));
 $$;
 
--- Returns the household_id of the currently authenticated user. Used by
--- RLS policies. SECURITY DEFINER so policies on public.users don't have
--- to allow a recursive self-select.
-create or replace function public.current_household_id()
-returns uuid
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select household_id from public.users where id = auth.uid();
-$$;
-
-revoke all on function public.current_household_id() from public;
-grant execute on function public.current_household_id() to authenticated;
-
 -- -------------------------------------------------------------------
 -- Tables
 -- -------------------------------------------------------------------
@@ -140,3 +124,23 @@ create table if not exists public.photos (
 );
 
 create index if not exists ix_photos_apartment on public.photos (apartment_id);
+
+-- -------------------------------------------------------------------
+-- current_household_id() — defined AFTER public.users exists
+-- -------------------------------------------------------------------
+
+-- Returns the household_id of the currently authenticated user. Used
+-- by RLS policies. SECURITY DEFINER so the function body can read
+-- public.users without triggering the policy on that same table.
+create or replace function public.current_household_id()
+returns uuid
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select household_id from public.users where id = auth.uid();
+$$;
+
+revoke all on function public.current_household_id() from public;
+grant execute on function public.current_household_id() to authenticated;
