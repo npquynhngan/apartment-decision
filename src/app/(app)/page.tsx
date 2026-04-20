@@ -38,8 +38,10 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">
           Criteria are ready. Add your first apartment to start scoring.
-          Apartment management lands in step 5.
         </p>
+        <Button asChild>
+          <Link href="/apartments/new">Add apartment →</Link>
+        </Button>
       </div>
     );
   }
@@ -48,8 +50,12 @@ export default async function DashboardPage() {
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
       <p className="text-muted-foreground">
-        Ranking dashboard coming in step 6.
+        Ranking dashboard coming in step 6. For now, view and score your
+        apartments from the Apartments tab.
       </p>
+      <Button asChild variant="outline">
+        <Link href="/apartments">View apartments →</Link>
+      </Button>
     </div>
   );
 }
