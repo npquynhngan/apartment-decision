@@ -67,7 +67,7 @@ export function ApartmentForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="apt-rent">Monthly rent (€)</Label>
+          <Label htmlFor="apt-rent">Monthly rent (S$)</Label>
           <Input
             id="apt-rent"
             name="rent"

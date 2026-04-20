@@ -9,9 +9,9 @@ import { deleteApartment } from "../actions";
 
 function formatRent(v: number | null) {
   if (v == null) return null;
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-SG", {
     style: "currency",
-    currency: "EUR",
+    currency: "SGD",
     maximumFractionDigits: 0,
   }).format(v);
 }
