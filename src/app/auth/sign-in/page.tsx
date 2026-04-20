@@ -23,7 +23,7 @@ export default async function SignInPage({ searchParams }: Props) {
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Apartment Decision</CardTitle>
           <CardDescription>
-            Enter your email to receive a sign-in link.
+            Sign in with a magic link or your password.
           </CardDescription>
         </CardHeader>
         <CardContent>
