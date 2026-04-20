@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
 import type { UserProfile, Household } from "@/types/database";
+import { AppNav } from "./_nav";
 
 export default async function AppLayout({
   children,
@@ -74,6 +75,7 @@ export default async function AppLayout({
             </form>
           </div>
         </div>
+        <AppNav />
       </header>
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
         {children}

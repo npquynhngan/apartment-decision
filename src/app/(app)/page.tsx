@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
 
-export default async function DashboardPlaceholder() {
+export default async function DashboardPage() {
   const supabase = await createClient();
 
   const { data: apartments } = await supabase
@@ -8,18 +10,45 @@ export default async function DashboardPlaceholder() {
     .select("id")
     .limit(1);
 
+  const { data: criteria } = await supabase
+    .from("criteria")
+    .select("id")
+    .limit(1);
+
+  if (!criteria?.length) {
+    return (
+      <div className="space-y-4 max-w-md">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Welcome to Apartment Decision
+        </h1>
+        <p className="text-muted-foreground">
+          Start by defining what matters to you — set up your scoring criteria
+          and both partners will weight each one independently.
+        </p>
+        <Button asChild>
+          <Link href="/criteria">Set up criteria →</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  if (!apartments?.length) {
+    return (
+      <div className="space-y-4 max-w-md">
+        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Criteria are ready. Add your first apartment to start scoring.
+          Apartment management lands in step 5.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
       <p className="text-muted-foreground">
-        {apartments?.length
-          ? "Ranking dashboard coming in step 6."
-          : "No apartments yet — add one to get started. Apartment management lands in step 5."}
-      </p>
-      <p className="text-xs text-muted-foreground">
-        Steps remaining: Criteria CRUD (4) · Apartments + scoring (5) ·
-        Ranking dashboard (6) · Map (7) · Viewings (8) · Reminders (9) ·
-        Scraper (10) · Commute auto-score (11) · LLM analysis (12).
+        Ranking dashboard coming in step 6.
       </p>
     </div>
   );
