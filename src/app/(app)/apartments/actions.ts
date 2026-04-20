@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { geocodeAddress } from "@/lib/geocode";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -79,17 +80,27 @@ export async function addApartment(
   const household_id = await getHouseholdId();
   if (!household_id) return { error: "Not in a household" };
 
+  const coords = parsed.data.address
+    ? await geocodeAddress(parsed.data.address)
+    : null;
+
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
     .from("apartments")
-    .insert({ household_id, ...parsed.data })
+    .insert({
+      household_id,
+      ...parsed.data,
+      lat: coords?.lat ?? null,
+      lng: coords?.lng ?? null,
+    })
     .select("id")
     .single();
 
   if (error) return { error: (error as { message: string }).message };
 
   revalidatePath("/apartments");
+  revalidatePath("/map");
   redirect(`/apartments/${(data as { id: string }).id}`);
 }
 
@@ -112,15 +123,37 @@ export async function updateApartment(
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   const supabase = await createClient();
+
+  const { data: existing } = await supabase
+    .from("apartments")
+    .select("address")
+    .eq("id", id)
+    .single();
+  const prevAddress =
+    (existing as { address: string | null } | null)?.address ?? null;
+
+  const addressChanged = parsed.data.address !== prevAddress;
+  const coords =
+    addressChanged && parsed.data.address
+      ? await geocodeAddress(parsed.data.address)
+      : null;
+
+  const updatePayload: Record<string, unknown> = { ...parsed.data };
+  if (addressChanged) {
+    updatePayload.lat = coords?.lat ?? null;
+    updatePayload.lng = coords?.lng ?? null;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
     .from("apartments")
-    .update(parsed.data)
+    .update(updatePayload)
     .eq("id", id);
   if (error) return { error: (error as { message: string }).message };
 
   revalidatePath("/apartments");
   revalidatePath(`/apartments/${id}`);
+  revalidatePath("/map");
   return {};
 }
 
@@ -131,6 +164,7 @@ export async function deleteApartment(formData: FormData): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (supabase as any).from("apartments").delete().eq("id", id);
   revalidatePath("/apartments");
+  revalidatePath("/map");
   redirect("/apartments");
 }
 
