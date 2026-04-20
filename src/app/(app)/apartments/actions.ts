@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { geocodeAddress } from "@/lib/geocode";
 import { fetchAndParseListing, type ListingMeta } from "@/lib/scrape";
+import { recomputeApartmentCommuteScores } from "./_recompute";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -100,9 +101,14 @@ export async function addApartment(
 
   if (error) return { error: (error as { message: string }).message };
 
+  const newId = (data as { id: string }).id;
+  if (coords) {
+    await recomputeApartmentCommuteScores(newId, household_id);
+  }
+
   revalidatePath("/apartments");
   revalidatePath("/map");
-  redirect(`/apartments/${(data as { id: string }).id}`);
+  redirect(`/apartments/${newId}`);
 }
 
 export async function updateApartment(
@@ -127,11 +133,13 @@ export async function updateApartment(
 
   const { data: existing } = await supabase
     .from("apartments")
-    .select("address")
+    .select("address, household_id")
     .eq("id", id)
     .single();
-  const prevAddress =
-    (existing as { address: string | null } | null)?.address ?? null;
+  const prev = existing as
+    | { address: string | null; household_id: string }
+    | null;
+  const prevAddress = prev?.address ?? null;
 
   const addressChanged = parsed.data.address !== prevAddress;
   const coords =
@@ -151,6 +159,10 @@ export async function updateApartment(
     .update(updatePayload)
     .eq("id", id);
   if (error) return { error: (error as { message: string }).message };
+
+  if (addressChanged && coords && prev?.household_id) {
+    await recomputeApartmentCommuteScores(id, prev.household_id);
+  }
 
   revalidatePath("/apartments");
   revalidatePath(`/apartments/${id}`);
@@ -184,9 +196,10 @@ export async function upsertScore(
 
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any).from("scores").upsert(parsed.data, {
-    onConflict: "apartment_id,criterion_id,user_slot",
-  });
+  const { error } = await (supabase as any).from("scores").upsert(
+    { ...parsed.data, auto: false, needs_review: false },
+    { onConflict: "apartment_id,criterion_id,user_slot" }
+  );
   if (error) return { error: (error as { message: string }).message };
 
   revalidatePath(`/apartments/${parsed.data.apartment_id}`);

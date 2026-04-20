@@ -1,10 +1,29 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { AUTO_SOURCES } from "@/lib/commute";
+import { recomputeHouseholdCommuteScores } from "../apartments/_recompute";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export type CriterionState = { error?: string };
+
+const autoSourceSchema = z
+  .string()
+  .optional()
+  .transform((v) => {
+    if (!v || v === "manual") return null;
+    return v;
+  })
+  .pipe(
+    z
+      .string()
+      .nullable()
+      .refine(
+        (v) => v === null || AUTO_SOURCES.includes(v as (typeof AUTO_SOURCES)[number]),
+        "Invalid auto source"
+      )
+  );
 
 const baseSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
@@ -12,6 +31,7 @@ const baseSchema = z.object({
   weight_a: z.coerce.number().int().min(0).max(10),
   weight_b: z.coerce.number().int().min(0).max(10),
   is_dealbreaker: z.boolean().default(false),
+  auto_source: autoSourceSchema,
 });
 
 async function getHouseholdId() {
@@ -38,6 +58,7 @@ export async function addCriterion(
     weight_a: formData.get("weight_a") ?? "5",
     weight_b: formData.get("weight_b") ?? "5",
     is_dealbreaker: formData.get("is_dealbreaker") === "on",
+    auto_source: formData.get("auto_source") ?? undefined,
   });
   if (!result.success) return { error: result.error.issues[0].message };
 
@@ -52,7 +73,13 @@ export async function addCriterion(
   });
   if (error) return { error: (error as { message: string }).message };
 
+  if (result.data.auto_source) {
+    await recomputeHouseholdCommuteScores(household_id);
+  }
+
   revalidatePath("/criteria");
+  revalidatePath("/");
+  revalidatePath("/apartments");
   return {};
 }
 
@@ -68,10 +95,20 @@ export async function updateCriterion(
     weight_a: formData.get("weight_a"),
     weight_b: formData.get("weight_b"),
     is_dealbreaker: formData.get("is_dealbreaker") === "on",
+    auto_source: formData.get("auto_source") ?? undefined,
   });
   if (!result.success) return { error: result.error.issues[0].message };
 
   const supabase = await createClient();
+  const { data: existing } = await supabase
+    .from("criteria")
+    .select("auto_source, household_id")
+    .eq("id", id)
+    .single();
+  const prev = existing as
+    | { auto_source: string | null; household_id: string }
+    | null;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
     .from("criteria")
@@ -79,7 +116,17 @@ export async function updateCriterion(
     .eq("id", id);
   if (error) return { error: (error as { message: string }).message };
 
+  if (
+    prev &&
+    prev.auto_source !== result.data.auto_source &&
+    result.data.auto_source
+  ) {
+    await recomputeHouseholdCommuteScores(prev.household_id);
+  }
+
   revalidatePath("/criteria");
+  revalidatePath("/");
+  revalidatePath("/apartments");
   return {};
 }
 

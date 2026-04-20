@@ -97,6 +97,24 @@ export function AddCriterionForm() {
         </div>
       </div>
 
+      <div className="space-y-1.5">
+        <Label htmlFor="add-auto-source">Auto-score from</Label>
+        <select
+          id="add-auto-source"
+          name="auto_source"
+          defaultValue="manual"
+          className="w-full h-9 rounded-md border bg-transparent px-3 text-sm"
+        >
+          <option value="manual">Manual (score yourself)</option>
+          <option value="commute_home">Distance to home</option>
+          <option value="commute_work">Distance to work</option>
+        </select>
+        <p className="text-xs text-muted-foreground">
+          Auto-scored criteria compute a 1–5 score from straight-line distance
+          and can be overridden on individual apartments.
+        </p>
+      </div>
+
       <label className="flex items-center gap-2 cursor-pointer text-sm">
         <input
           type="checkbox"

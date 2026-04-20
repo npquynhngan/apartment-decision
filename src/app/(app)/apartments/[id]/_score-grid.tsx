@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { computeApartmentScore } from "@/lib/scoring";
+import { AUTO_SOURCES, autoSourceLabel, type AutoSource } from "@/lib/commute";
 import type { Criterion, Score } from "@/types/database";
 import { upsertScore } from "../actions";
 
@@ -10,6 +11,10 @@ type Key = `${string}:${"a" | "b"}`;
 
 function keyOf(criterion_id: string, slot: "a" | "b"): Key {
   return `${criterion_id}:${slot}`;
+}
+
+function isAutoSource(v: string | null): v is AutoSource {
+  return v != null && (AUTO_SOURCES as readonly string[]).includes(v);
 }
 
 function formatScore(v: number | null) {
@@ -34,6 +39,12 @@ export function ScoreGrid({
         initialScores.map((s) => [keyOf(s.criterion_id, s.user_slot), s.value])
       )
   );
+  const [autoFlags, setAutoFlags] = useState<Map<Key, boolean>>(
+    () =>
+      new Map(
+        initialScores.map((s) => [keyOf(s.criterion_id, s.user_slot), s.auto])
+      )
+  );
   const [errors, setErrors] = useState<Map<Key, string>>(new Map());
   const [pendingKeys, setPendingKeys] = useState<Set<Key>>(new Set());
   const [, startTransition] = useTransition();
@@ -51,6 +62,11 @@ export function ScoreGrid({
     setValues((prev) => {
       const next = new Map(prev);
       next.set(k, value);
+      return next;
+    });
+    setAutoFlags((prev) => {
+      const next = new Map(prev);
+      next.set(k, false);
       return next;
     });
     setErrors((prev) => {
@@ -148,6 +164,11 @@ export function ScoreGrid({
                         Dealbreaker
                       </span>
                     )}
+                    {isAutoSource(c.auto_source) && (
+                      <span className="text-xs font-medium text-muted-foreground bg-muted rounded px-1.5 py-0.5">
+                        Auto · {autoSourceLabel(c.auto_source)}
+                      </span>
+                    )}
                     <span className="text-xs text-muted-foreground ml-auto">
                       weight A {c.weight_a} · B {c.weight_b}
                     </span>
@@ -157,6 +178,7 @@ export function ScoreGrid({
                       label="Partner A"
                       highlight={userSlot === "a"}
                       value={values.get(keyA)}
+                      auto={autoFlags.get(keyA) ?? false}
                       pending={pendingKeys.has(keyA)}
                       error={errors.get(keyA)}
                       onChange={(v) => setScore(c.id, "a", v)}
@@ -165,6 +187,7 @@ export function ScoreGrid({
                       label="Partner B"
                       highlight={userSlot === "b"}
                       value={values.get(keyB)}
+                      auto={autoFlags.get(keyB) ?? false}
                       pending={pendingKeys.has(keyB)}
                       error={errors.get(keyB)}
                       onChange={(v) => setScore(c.id, "b", v)}
@@ -211,6 +234,7 @@ function ScoreRow({
   label,
   highlight,
   value,
+  auto,
   pending,
   error,
   onChange,
@@ -218,6 +242,7 @@ function ScoreRow({
   label: string;
   highlight?: boolean;
   value: number | undefined;
+  auto: boolean;
   pending: boolean;
   error: string | undefined;
   onChange: (v: number) => void;
@@ -232,6 +257,9 @@ function ScoreRow({
         >
           {label}
           {highlight && " (you)"}
+          {auto && value != null && (
+            <span className="ml-1.5 text-muted-foreground">· auto</span>
+          )}
         </span>
         {pending && <span className="text-muted-foreground">Saving…</span>}
       </div>

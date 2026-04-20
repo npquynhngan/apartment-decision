@@ -3,15 +3,31 @@
 import { useState, useTransition } from "react";
 import { updateCriterion, deleteCriterion } from "./actions";
 import { Button } from "@/components/ui/button";
+import {
+  AUTO_SOURCES,
+  autoSourceLabel,
+  type AutoSource,
+} from "@/lib/commute";
 import type { Criterion } from "@/types/database";
+
+function isAutoSource(v: string | null): v is AutoSource {
+  return v != null && (AUTO_SOURCES as readonly string[]).includes(v);
+}
 
 function CriterionRow({ criterion }: { criterion: Criterion }) {
   const [weightA, setWeightA] = useState(criterion.weight_a);
   const [weightB, setWeightB] = useState(criterion.weight_b);
   const [isDealbreaker, setIsDealbreaker] = useState(criterion.is_dealbreaker);
+  const [autoSource, setAutoSource] = useState<string>(
+    criterion.auto_source ?? "manual"
+  );
   const [dirty, setDirty] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const autoBadge = isAutoSource(criterion.auto_source)
+    ? autoSourceLabel(criterion.auto_source)
+    : null;
 
   function markDirty() {
     setDirty(true);
@@ -26,6 +42,7 @@ function CriterionRow({ criterion }: { criterion: Criterion }) {
     fd.set("weight_a", String(weightA));
     fd.set("weight_b", String(weightB));
     if (isDealbreaker) fd.set("is_dealbreaker", "on");
+    fd.set("auto_source", autoSource);
 
     startTransition(async () => {
       const result = await updateCriterion(fd);
@@ -45,6 +62,11 @@ function CriterionRow({ criterion }: { criterion: Criterion }) {
           {isDealbreaker && (
             <span className="text-xs font-medium text-destructive bg-destructive/10 rounded px-1.5 py-0.5">
               Dealbreaker
+            </span>
+          )}
+          {autoBadge && (
+            <span className="text-xs font-medium text-muted-foreground bg-muted rounded px-1.5 py-0.5">
+              Auto · {autoBadge}
             </span>
           )}
         </div>
@@ -99,7 +121,7 @@ function CriterionRow({ criterion }: { criterion: Criterion }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 flex-wrap">
         <label className="flex items-center gap-2 text-xs cursor-pointer">
           <input
             type="checkbox"
@@ -111,6 +133,22 @@ function CriterionRow({ criterion }: { criterion: Criterion }) {
             className="h-3.5 w-3.5 rounded"
           />
           Dealbreaker
+        </label>
+
+        <label className="flex items-center gap-2 text-xs">
+          <span className="text-muted-foreground">Auto-score</span>
+          <select
+            value={autoSource}
+            onChange={(e) => {
+              setAutoSource(e.target.value);
+              markDirty();
+            }}
+            className="h-7 rounded-md border bg-transparent px-2 text-xs"
+          >
+            <option value="manual">Manual</option>
+            <option value="commute_home">Distance to home</option>
+            <option value="commute_work">Distance to work</option>
+          </select>
         </label>
 
         {dirty && (

@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: "/viewings", label: "Viewings" },
   { href: "/reminders", label: "Reminders" },
   { href: "/criteria", label: "Criteria" },
+  { href: "/profile", label: "Profile" },
 ];
 
 export function AppNav() {
