@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { geocodeAddress } from "@/lib/geocode";
+import { fetchAndParseListing, type ListingMeta } from "@/lib/scrape";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -191,4 +192,26 @@ export async function upsertScore(
   revalidatePath(`/apartments/${parsed.data.apartment_id}`);
   revalidatePath("/apartments");
   return {};
+}
+
+const urlSchema = z
+  .string()
+  .min(1, "URL is required")
+  .refine((v) => {
+    try {
+      const u = new URL(v);
+      return u.protocol === "http:" || u.protocol === "https:";
+    } catch {
+      return false;
+    }
+  }, "Enter a valid http(s) URL");
+
+export async function scrapeListing(
+  url: string
+): Promise<{ data?: ListingMeta; error?: string }> {
+  const parsed = urlSchema.safeParse(url);
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const meta = await fetchAndParseListing(parsed.data);
+  if (!meta) return { error: "Could not fetch that listing" };
+  return { data: meta };
 }

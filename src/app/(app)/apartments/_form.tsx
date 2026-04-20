@@ -1,12 +1,13 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Apartment } from "@/types/database";
 import {
   addApartment,
+  scrapeListing,
   updateApartment,
   type ApartmentState,
 } from "./actions";
@@ -35,9 +36,52 @@ export function ApartmentForm({
     FormData
   >(action, {});
 
-  // In edit mode, successful update returns {} → parent can close the form
-  if (mode === "edit" && state && !state.error && isPending === false) {
-    // Note: we rely on the parent to re-render with fresh data.
+  const [name, setName] = useState(apartment?.name ?? "");
+  const [address, setAddress] = useState(apartment?.address ?? "");
+  const [rent, setRent] = useState<string>(
+    apartment?.rent != null ? String(apartment.rent) : ""
+  );
+  const [sqft, setSqft] = useState<string>(
+    apartment?.sqft != null ? String(apartment.sqft) : ""
+  );
+  const [url, setUrl] = useState(apartment?.url ?? "");
+
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [fetchHint, setFetchHint] = useState<string | null>(null);
+  const [fetching, startFetch] = useTransition();
+
+  function handleFetch() {
+    setFetchError(null);
+    setFetchHint(null);
+    startFetch(async () => {
+      const res = await scrapeListing(url);
+      if (res.error || !res.data) {
+        setFetchError(res.error ?? "Could not read that listing");
+        return;
+      }
+      const filled: string[] = [];
+      if (res.data.name && !name) {
+        setName(res.data.name);
+        filled.push("name");
+      }
+      if (res.data.address && !address) {
+        setAddress(res.data.address);
+        filled.push("address");
+      }
+      if (res.data.rent != null && !rent) {
+        setRent(String(Math.round(res.data.rent)));
+        filled.push("rent");
+      }
+      if (res.data.sqft != null && !sqft) {
+        setSqft(String(Math.round(res.data.sqft)));
+        filled.push("sqft");
+      }
+      setFetchHint(
+        filled.length > 0
+          ? `Filled ${filled.join(", ")}. Review before saving.`
+          : "Nothing new found on that page."
+      );
+    });
   }
 
   return (
@@ -49,8 +93,9 @@ export function ApartmentForm({
         <Input
           id="apt-name"
           name="name"
-          defaultValue={apartment?.name ?? ""}
-          placeholder="e.g. Mitte 3BR"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g. Tiong Bahru 2BR"
           required
         />
       </div>
@@ -60,7 +105,8 @@ export function ApartmentForm({
         <Input
           id="apt-address"
           name="address"
-          defaultValue={apartment?.address ?? ""}
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
           placeholder="Street, city"
         />
       </div>
@@ -74,7 +120,8 @@ export function ApartmentForm({
             type="number"
             min={0}
             step="1"
-            defaultValue={apartment?.rent ?? ""}
+            value={rent}
+            onChange={(e) => setRent(e.target.value)}
           />
         </div>
         <div className="space-y-1.5">
@@ -85,20 +132,38 @@ export function ApartmentForm({
             type="number"
             min={0}
             step="1"
-            defaultValue={apartment?.sqft ?? ""}
+            value={sqft}
+            onChange={(e) => setSqft(e.target.value)}
           />
         </div>
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="apt-url">Listing URL</Label>
-        <Input
-          id="apt-url"
-          name="url"
-          type="url"
-          defaultValue={apartment?.url ?? ""}
-          placeholder="https://…"
-        />
+        <div className="flex gap-2">
+          <Input
+            id="apt-url"
+            name="url"
+            type="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://…"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleFetch}
+            disabled={fetching || !url}
+          >
+            {fetching ? "Fetching…" : "Fetch"}
+          </Button>
+        </div>
+        {fetchError && (
+          <p className="text-xs text-destructive">{fetchError}</p>
+        )}
+        {fetchHint && !fetchError && (
+          <p className="text-xs text-muted-foreground">{fetchHint}</p>
+        )}
       </div>
 
       <div className="space-y-1.5">
