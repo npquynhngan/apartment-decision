@@ -25,6 +25,25 @@ function formatRent(v: number | null | undefined) {
   }).format(v);
 }
 
+function formatNextViewing(iso: string) {
+  const d = new Date(iso);
+  const diffMin = Math.round((d.getTime() - Date.now()) / 60_000);
+  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  let relative: string;
+  if (Math.abs(diffMin) < 60) relative = rtf.format(diffMin, "minute");
+  else if (Math.abs(diffMin) < 60 * 24)
+    relative = rtf.format(Math.round(diffMin / 60), "hour");
+  else relative = rtf.format(Math.round(diffMin / (60 * 24)), "day");
+  const when = new Intl.DateTimeFormat("en-SG", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(d);
+  return `${relative} (${when})`;
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -142,6 +161,15 @@ export default async function DashboardPage() {
   const dealbreakerCount = ranked.filter((a) => a.dealbreaker_failed).length;
   const unscoredCount = ranked.filter((a) => a.effective_score == null).length;
 
+  const now = Date.now();
+  const nextViewing = apartments
+    .filter((a) => a.viewing_at && new Date(a.viewing_at).getTime() >= now)
+    .sort(
+      (x, y) =>
+        new Date(x.viewing_at as string).getTime() -
+        new Date(y.viewing_at as string).getTime()
+    )[0];
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
@@ -156,6 +184,20 @@ export default async function DashboardPage() {
           <Link href="/apartments/new">+ Add apartment</Link>
         </Button>
       </div>
+
+      {nextViewing && (
+        <Link
+          href={`/apartments/${nextViewing.id}`}
+          className="block rounded-lg border bg-muted/30 px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
+        >
+          <span className="text-muted-foreground">Next viewing: </span>
+          <span className="font-medium">{nextViewing.name}</span>
+          <span className="text-muted-foreground">
+            {" "}
+            · {formatNextViewing(nextViewing.viewing_at as string)}
+          </span>
+        </Link>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-4">
         <Stat label="Apartments" value={ranked.length.toString()} />
