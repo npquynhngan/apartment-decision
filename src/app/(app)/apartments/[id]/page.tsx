@@ -5,9 +5,12 @@ import { createClient } from "@/lib/supabase/server";
 import type {
   Apartment,
   Criterion,
+  Reminder,
   Score,
   UserProfile,
 } from "@/types/database";
+import { AddReminderForm } from "../../reminders/_add-form";
+import { ReminderList } from "../../reminders/_reminder-list";
 import { InfoPanel } from "./_info-panel";
 import { ScoreGrid } from "./_score-grid";
 
@@ -46,7 +49,11 @@ export default async function ApartmentDetailPage({
   const apartment = apartmentData as Apartment | null;
   if (!apartment) notFound();
 
-  const [{ data: criteriaData }, { data: scoresData }] = await Promise.all([
+  const [
+    { data: criteriaData },
+    { data: scoresData },
+    { data: remindersData },
+  ] = await Promise.all([
     supabase
       .from("criteria")
       .select("*")
@@ -55,9 +62,24 @@ export default async function ApartmentDetailPage({
       .order("position")
       .order("created_at"),
     supabase.from("scores").select("*").eq("apartment_id", id),
+    supabase
+      .from("reminders")
+      .select("*")
+      .eq("apartment_id", id)
+      .order("due_at"),
   ]);
   const criteria = (criteriaData ?? []) as Criterion[];
   const scores = (scoresData ?? []) as Score[];
+  const reminders = (remindersData ?? []) as Reminder[];
+
+  const reminderItems = reminders.map((r) => ({
+    id: r.id,
+    text: r.text,
+    due_at: r.due_at,
+    done: r.done,
+    apartment_id: r.apartment_id,
+    apartment_name: apartment.name,
+  }));
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -78,6 +100,19 @@ export default async function ApartmentDetailPage({
         initialScores={scores}
         userSlot={profile.user_slot}
       />
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold tracking-tight">Reminders</h2>
+        <AddReminderForm
+          apartments={[{ id: apartment.id, name: apartment.name }]}
+          defaultApartmentId={apartment.id}
+        />
+        <ReminderList
+          reminders={reminderItems}
+          showApartment={false}
+          emptyHint="No reminders for this apartment yet."
+        />
+      </section>
     </div>
   );
 }

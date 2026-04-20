@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/apartments", label: "Apartments" },
   { href: "/map", label: "Map" },
   { href: "/viewings", label: "Viewings" },
+  { href: "/reminders", label: "Reminders" },
   { href: "/criteria", label: "Criteria" },
 ];
 
