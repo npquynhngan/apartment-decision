@@ -102,7 +102,7 @@ export interface Database {
           url: string | null
           notes: string | null
           viewing_at: string | null
-          sqm: number | null
+          sqft: number | null
           scrape_data: Json | null
           created_at: string
         }
@@ -117,7 +117,7 @@ export interface Database {
           url?: string | null
           notes?: string | null
           viewing_at?: string | null
-          sqm?: number | null
+          sqft?: number | null
           scrape_data?: Json | null
           created_at?: string
         }
@@ -132,7 +132,7 @@ export interface Database {
           url?: string | null
           notes?: string | null
           viewing_at?: string | null
-          sqm?: number | null
+          sqft?: number | null
           scrape_data?: Json | null
           created_at?: string
         }

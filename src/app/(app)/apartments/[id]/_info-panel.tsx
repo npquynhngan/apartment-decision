@@ -73,10 +73,10 @@ export function InfoPanel({ apartment }: { apartment: Apartment }) {
             <span className="font-medium">{formatRent(apartment.rent)}/mo</span>
           </span>
         )}
-        {apartment.sqm != null && (
+        {apartment.sqft != null && (
           <span>
             <span className="text-muted-foreground">Size </span>
-            <span className="font-medium">{apartment.sqm} m²</span>
+            <span className="font-medium">{apartment.sqft} sqft</span>
           </span>
         )}
         {apartment.viewing_at && (

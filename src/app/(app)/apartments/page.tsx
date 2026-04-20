@@ -112,7 +112,7 @@ export default async function ApartmentsPage() {
                     )}
                     <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                       {a.rent != null && <span>{formatRent(a.rent)}/mo</span>}
-                      {a.sqm != null && <span>{a.sqm} m²</span>}
+                      {a.sqft != null && <span>{a.sqft} sqft</span>}
                       {a.viewing_at && (
                         <span>
                           Viewing{" "}

@@ -78,14 +78,14 @@ export function ApartmentForm({
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="apt-sqm">Size (m²)</Label>
+          <Label htmlFor="apt-sqft">Size (sqft)</Label>
           <Input
-            id="apt-sqm"
-            name="sqm"
+            id="apt-sqft"
+            name="sqft"
             type="number"
             min={0}
-            step="0.1"
-            defaultValue={apartment?.sqm ?? ""}
+            step="1"
+            defaultValue={apartment?.sqft ?? ""}
           />
         </div>
       </div>
