@@ -8,7 +8,7 @@ import {
   type AiAnalysis,
 } from "@/lib/llm";
 import { fetchAndParseListing, type ListingMeta } from "@/lib/scrape";
-import { recomputeApartmentCommuteScores } from "./_recompute";
+import { recomputeApartmentCommuteScores, recomputeSizeScore } from "./_recompute";
 import type { Apartment, Criterion, Score } from "@/types/database";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -37,6 +37,15 @@ const optionalNumber = z
     return Number.isFinite(n) ? n : null;
   });
 
+const optionalInteger = z
+  .string()
+  .optional()
+  .transform((v) => {
+    if (v === undefined || v.trim() === "") return null;
+    const n = parseInt(v, 10);
+    return Number.isFinite(n) ? n : null;
+  });
+
 const optionalDateTime = z
   .string()
   .optional()
@@ -51,6 +60,8 @@ const apartmentSchema = z.object({
   address: optionalString,
   rent: optionalNumber,
   sqft: optionalNumber,
+  bedrooms: optionalInteger,
+  bathrooms: optionalInteger,
   url: optionalString,
   notes: optionalString,
   viewing_at: optionalDateTime,
@@ -79,6 +90,8 @@ export async function addApartment(
     address: formData.get("address") ?? undefined,
     rent: formData.get("rent") ?? undefined,
     sqft: formData.get("sqft") ?? undefined,
+    bedrooms: formData.get("bedrooms") ?? undefined,
+    bathrooms: formData.get("bathrooms") ?? undefined,
     url: formData.get("url") ?? undefined,
     notes: formData.get("notes") ?? undefined,
     viewing_at: formData.get("viewing_at") ?? undefined,
@@ -111,6 +124,12 @@ export async function addApartment(
   if (coords || parsed.data.rent != null) {
     await recomputeApartmentCommuteScores(newId, household_id);
   }
+  await recomputeSizeScore(
+    newId,
+    household_id,
+    parsed.data.bedrooms,
+    parsed.data.bathrooms
+  );
 
   revalidatePath("/apartments");
   revalidatePath("/map");
@@ -129,6 +148,8 @@ export async function updateApartment(
     address: formData.get("address") ?? undefined,
     rent: formData.get("rent") ?? undefined,
     sqft: formData.get("sqft") ?? undefined,
+    bedrooms: formData.get("bedrooms") ?? undefined,
+    bathrooms: formData.get("bathrooms") ?? undefined,
     url: formData.get("url") ?? undefined,
     notes: formData.get("notes") ?? undefined,
     viewing_at: formData.get("viewing_at") ?? undefined,
@@ -169,6 +190,14 @@ export async function updateApartment(
   const rentChanged = parsed.data.rent !== (prev?.rent ?? null);
   if (prev?.household_id && ((addressChanged && coords) || rentChanged)) {
     await recomputeApartmentCommuteScores(id, prev.household_id);
+  }
+  if (prev?.household_id) {
+    await recomputeSizeScore(
+      id,
+      prev.household_id,
+      parsed.data.bedrooms,
+      parsed.data.bathrooms
+    );
   }
 
   revalidatePath("/apartments");

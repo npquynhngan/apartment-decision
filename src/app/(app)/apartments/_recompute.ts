@@ -9,6 +9,7 @@ import {
   type LatLng,
 } from "@/lib/commute";
 import { rentToScore } from "@/lib/cost";
+import { computeSizeScore } from "@/lib/scoring";
 
 type UserWithCoords = {
   user_slot: "a" | "b" | null;
@@ -161,5 +162,68 @@ export async function recomputeHouseholdCommuteScores(household_id: string) {
   for (const apartment of apartments) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await computeForApartment(supabase as any, apartment, users, criteria);
+  }
+}
+
+/**
+ * Upsert an auto-score for all 'size' criteria in the household, for each
+ * user slot that exists.  Skips any slot that already has a manual override
+ * (auto = false) so user edits are never clobbered.
+ */
+export async function recomputeSizeScore(
+  apartment_id: string,
+  household_id: string,
+  bedrooms: number | null,
+  bathrooms: number | null
+) {
+  const value = computeSizeScore(bedrooms, bathrooms);
+  if (value === null) return;
+
+  const supabase = await createClient();
+  const [criteriaRes, usersRes] = await Promise.all([
+    supabase
+      .from("criteria")
+      .select("id")
+      .eq("household_id", household_id)
+      .eq("auto_source", "size"),
+    supabase
+      .from("users")
+      .select("user_slot")
+      .eq("household_id", household_id),
+  ]);
+
+  const criteria = (criteriaRes.data ?? []) as { id: string }[];
+  if (criteria.length === 0) return;
+
+  const slots = ((usersRes.data ?? []) as { user_slot: string | null }[])
+    .map((u) => u.user_slot)
+    .filter((s): s is "a" | "b" => s === "a" || s === "b");
+
+  for (const c of criteria) {
+    for (const slot of slots) {
+      // Don't overwrite a manual score
+      const { data: existing } = await supabase
+        .from("scores")
+        .select("auto")
+        .eq("apartment_id", apartment_id)
+        .eq("criterion_id", c.id)
+        .eq("user_slot", slot)
+        .maybeSingle();
+
+      if (existing && (existing as { auto: boolean }).auto === false) continue;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).from("scores").upsert(
+        {
+          apartment_id,
+          criterion_id: c.id,
+          user_slot: slot,
+          value,
+          auto: true,
+          needs_review: true,
+        },
+        { onConflict: "apartment_id,criterion_id,user_slot" }
+      );
+    }
   }
 }

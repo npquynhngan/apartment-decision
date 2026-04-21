@@ -79,3 +79,18 @@ export function computeApartmentScore(
     effective_score,
   };
 }
+
+/**
+ * Compute the auto-score for the 'size' criterion.
+ * Returns null if either value is null (skip scoring) or if the sum is 0.
+ * Otherwise returns MIN(bedrooms + bathrooms, 5), which satisfies the
+ * scores.value CHECK constraint (1–5).
+ */
+export function computeSizeScore(
+  bedrooms: number | null,
+  bathrooms: number | null
+): number | null {
+  if (bedrooms === null || bathrooms === null) return null;
+  const v = Math.min(bedrooms + bathrooms, 5);
+  return v >= 1 ? v : null;
+}

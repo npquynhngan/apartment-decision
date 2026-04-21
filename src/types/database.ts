@@ -103,6 +103,8 @@ export interface Database {
           notes: string | null
           viewing_at: string | null
           sqft: number | null
+          bedrooms: number | null
+          bathrooms: number | null
           scrape_data: Json | null
           ai_analysis: Json | null
           ai_analysis_at: string | null
@@ -120,6 +122,8 @@ export interface Database {
           notes?: string | null
           viewing_at?: string | null
           sqft?: number | null
+          bedrooms?: number | null
+          bathrooms?: number | null
           scrape_data?: Json | null
           ai_analysis?: Json | null
           ai_analysis_at?: string | null
@@ -137,6 +141,8 @@ export interface Database {
           notes?: string | null
           viewing_at?: string | null
           sqft?: number | null
+          bedrooms?: number | null
+          bathrooms?: number | null
           scrape_data?: Json | null
           ai_analysis?: Json | null
           ai_analysis_at?: string | null

@@ -44,6 +44,12 @@ export function ApartmentForm({
   const [sqft, setSqft] = useState<string>(
     apartment?.sqft != null ? String(apartment.sqft) : ""
   );
+  const [bedrooms, setBedrooms] = useState<string>(
+    apartment?.bedrooms != null ? String(apartment.bedrooms) : ""
+  );
+  const [bathrooms, setBathrooms] = useState<string>(
+    apartment?.bathrooms != null ? String(apartment.bathrooms) : ""
+  );
   const [url, setUrl] = useState(apartment?.url ?? "");
 
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -134,6 +140,35 @@ export function ApartmentForm({
             step="1"
             value={sqft}
             onChange={(e) => setSqft(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="apt-bedrooms">Bedrooms</Label>
+          <Input
+            id="apt-bedrooms"
+            name="bedrooms"
+            type="number"
+            min={0}
+            max={20}
+            step="1"
+            value={bedrooms}
+            onChange={(e) => setBedrooms(e.target.value)}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="apt-bathrooms">Bathrooms</Label>
+          <Input
+            id="apt-bathrooms"
+            name="bathrooms"
+            type="number"
+            min={0}
+            max={20}
+            step="1"
+            value={bathrooms}
+            onChange={(e) => setBathrooms(e.target.value)}
           />
         </div>
       </div>

@@ -119,6 +119,9 @@ export default async function ApartmentsPage() {
                     <div className="flex items-center gap-3 mt-1 text-xs text-dusk-indigo/55">
                       {a.rent != null && <span>{formatRent(a.rent)}/mo</span>}
                       {a.sqft != null && <span>{a.sqft} sqft</span>}
+                      {a.bedrooms != null && a.bathrooms != null && (
+                        <span>{a.bedrooms} bed / {a.bathrooms} bath</span>
+                      )}
                       {a.viewing_at && (
                         <span>
                           Viewing{" "}

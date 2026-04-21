@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeApartmentScore } from "../scoring";
+import { computeApartmentScore, computeSizeScore } from "../scoring";
 
 describe("computeApartmentScore", () => {
   it("returns all nulls / false when nothing has been scored", () => {
@@ -153,5 +153,39 @@ describe("computeApartmentScore", () => {
     );
     expect(r.score_a).toBeNull();
     expect(r.combined_score).toBeNull();
+  });
+});
+
+describe("computeSizeScore", () => {
+  it("studio: 0 bed + 1 bath = 1", () => {
+    expect(computeSizeScore(0, 1)).toBe(1);
+  });
+
+  it("1 bed + 1 bath = 2", () => {
+    expect(computeSizeScore(1, 1)).toBe(2);
+  });
+
+  it("2 bed + 1 bath = 3", () => {
+    expect(computeSizeScore(2, 1)).toBe(3);
+  });
+
+  it("3 bed + 2 bath = 5 (capped)", () => {
+    expect(computeSizeScore(3, 2)).toBe(5);
+  });
+
+  it("10 bed + 5 bath = 5 (capped)", () => {
+    expect(computeSizeScore(10, 5)).toBe(5);
+  });
+
+  it("null bedrooms → no score", () => {
+    expect(computeSizeScore(null, 1)).toBeNull();
+  });
+
+  it("null bathrooms → no score", () => {
+    expect(computeSizeScore(1, null)).toBeNull();
+  });
+
+  it("both null → no score", () => {
+    expect(computeSizeScore(null, null)).toBeNull();
   });
 });
