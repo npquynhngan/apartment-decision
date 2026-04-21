@@ -117,7 +117,7 @@
 
   /* font families */
   --font-sans:    var(--font-jost), system-ui, sans-serif;
-  --font-heading: var(--font-caveat), Georgia, serif;
+  --font-heading: var(--font-jim-nightshade), Georgia, serif;
   --font-accent:  var(--font-gloock), Georgia, serif;
   --font-mono:    ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -223,15 +223,15 @@
     background-attachment: fixed;
     background-size: cover;
     font-family: var(--font-sans);
-    font-size: 1.125rem;
+    font-size: 1.125rem;   /* 20.25px — body text */
     line-height: 1.65;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    font-weight: 400;      /* Jim Nightshade is weight-400 only */
+    letter-spacing: 0;
+    line-height: 1.15;
   }
 
   /* Range inputs */
@@ -239,8 +239,8 @@
     accent-color: var(--sky-cornflower);
   }
 
-  /* Smooth scroll */
   html {
+    font-size: 112.5%;          /* bump root to 18px so Tailwind text-* scales up proportionally */
     scroll-behavior: smooth;
   }
 }

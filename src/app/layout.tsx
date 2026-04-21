@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Caveat, Jost, Gloock } from "next/font/google";
+import { Jim_Nightshade, Jost, Gloock } from "next/font/google";
 import "./globals.css";
 
-const caveat = Caveat({
-  variable: "--font-caveat",
+const jimNightshade = Jim_Nightshade({
+  variable: "--font-jim-nightshade",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400"],
   display: "swap",
 });
 
@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${caveat.variable} ${jost.variable} ${gloock.variable} h-full antialiased`}
+      className={`${jimNightshade.variable} ${jost.variable} ${gloock.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
