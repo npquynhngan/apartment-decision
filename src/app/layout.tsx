@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
-import { Unna, Crimson_Pro, Gloock } from "next/font/google";
+import { Caveat, Jost, Gloock } from "next/font/google";
 import "./globals.css";
 
-const unna = Unna({
-  variable: "--font-unna",
+const caveat = Caveat({
+  variable: "--font-caveat",
   subsets: ["latin"],
   weight: ["400", "700"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 
-const crimsonPro = Crimson_Pro({
-  variable: "--font-crimson",
+const jost = Jost({
+  variable: "--font-jost",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",
@@ -38,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${unna.variable} ${crimsonPro.variable} ${gloock.variable} h-full antialiased`}
+      className={`${caveat.variable} ${jost.variable} ${gloock.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

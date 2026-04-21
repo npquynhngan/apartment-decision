@@ -14,10 +14,10 @@ export function DriftingClouds() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <ellipse cx="50"  cy="28" rx="50"  ry="14" fill="#F5ECD7" opacity="0.55" />
-        <ellipse cx="85"  cy="22" rx="38"  ry="18" fill="#F5ECD7" opacity="0.55" />
-        <ellipse cx="120" cy="28" rx="35"  ry="13" fill="#F5ECD7" opacity="0.55" />
-        <ellipse cx="148" cy="30" rx="20"  ry="10" fill="#F5ECD7" opacity="0.45" />
+        <ellipse cx="50"  cy="28" rx="50"  ry="14" fill="#D8D0F0" opacity="0.28" />
+        <ellipse cx="85"  cy="22" rx="38"  ry="18" fill="#D8D0F0" opacity="0.28" />
+        <ellipse cx="120" cy="28" rx="35"  ry="13" fill="#D8D0F0" opacity="0.28" />
+        <ellipse cx="148" cy="30" rx="20"  ry="10" fill="#D8D0F0" opacity="0.20" />
       </svg>
 
       {/* Faster, smaller cloud — different y position for parallax */}
@@ -29,9 +29,9 @@ export function DriftingClouds() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <ellipse cx="32"  cy="19" rx="32"  ry="10" fill="#F5ECD7" opacity="0.38" />
-        <ellipse cx="58"  cy="15" rx="26"  ry="13" fill="#F5ECD7" opacity="0.38" />
-        <ellipse cx="82"  cy="19" rx="22"  ry="9"  fill="#F5ECD7" opacity="0.30" />
+        <ellipse cx="32"  cy="19" rx="32"  ry="10" fill="#D8D0F0" opacity="0.18" />
+        <ellipse cx="58"  cy="15" rx="26"  ry="13" fill="#D8D0F0" opacity="0.18" />
+        <ellipse cx="82"  cy="19" rx="22"  ry="9"  fill="#D8D0F0" opacity="0.14" />
       </svg>
     </div>
   );

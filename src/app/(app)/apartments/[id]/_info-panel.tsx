@@ -107,7 +107,7 @@ export function InfoPanel({ apartment }: { apartment: Apartment }) {
       {apartment.notes && (
         <p
           className="text-sm whitespace-pre-wrap pt-2"
-          style={{ borderTop: "1px solid rgba(139,115,85,0.2)" }}
+          style={{ borderTop: "1px solid rgba(155,143,181,0.18)" }}
         >
           {apartment.notes}
         </p>

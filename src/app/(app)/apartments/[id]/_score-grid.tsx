@@ -151,12 +151,12 @@ export function ScoreGrid({
           <h3 className="text-xs font-semibold uppercase tracking-wider text-dusk-indigo/60">
             {category}
           </h3>
-          <div className="rounded-2xl bg-oatmeal shadow-warm overflow-hidden divide-y" style={{ borderColor: "rgba(139,115,85,0.15)" }}>
+          <div className="rounded-2xl bg-oatmeal shadow-warm overflow-hidden divide-y" style={{ borderColor: "rgba(155,143,181,0.15)" }}>
             {items.map((c) => {
               const keyA = keyOf(c.id, "a");
               const keyB = keyOf(c.id, "b");
               return (
-                <div key={c.id} className="p-3 sm:p-4 space-y-2" style={{ borderColor: "rgba(139,115,85,0.15)" }}>
+                <div key={c.id} className="p-3 sm:p-4 space-y-2" style={{ borderColor: "rgba(155,143,181,0.15)" }}>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium text-sm text-ink-plum">{c.name}</span>
                     {c.is_dealbreaker && (

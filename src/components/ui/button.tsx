@@ -9,11 +9,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-sophie-rose text-parchment shadow-warm hover:shadow-warm-md hover:brightness-[1.06]",
+          "bg-sky-cornflower text-[#1C1530] shadow-warm hover:shadow-warm-md hover:brightness-[1.08]",
         destructive:
-          "bg-destructive text-white shadow-warm hover:shadow-warm-md hover:brightness-[1.06]",
+          "bg-destructive text-parchment shadow-warm hover:shadow-warm-md hover:brightness-[1.06]",
         outline:
-          "border border-border bg-background text-foreground shadow-warm hover:bg-oatmeal hover:shadow-warm-md",
+          "border border-border bg-oatmeal/60 text-ink-plum shadow-warm hover:bg-oatmeal hover:shadow-warm-md",
         secondary:
           "bg-oatmeal text-ink-plum shadow-warm hover:bg-oatmeal-deep hover:shadow-warm-md",
         ghost:

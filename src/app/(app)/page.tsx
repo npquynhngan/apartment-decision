@@ -192,7 +192,7 @@ export default async function DashboardPage() {
         <Link
           href={`/apartments/${nextViewing.id}`}
           className="block rounded-2xl px-4 py-3 text-sm shadow-warm transition-all duration-200 hover:shadow-warm-md"
-          style={{ background: "rgba(82,168,139,0.12)", border: "1px solid rgba(82,168,139,0.25)" }}
+          style={{ background: "rgba(82,196,176,0.12)", border: "1px solid rgba(82,196,176,0.25)" }}
         >
           <span className="text-dusk-indigo/70">Next viewing: </span>
           <span className="font-medium text-ink-plum">{nextViewing.name}</span>
@@ -307,7 +307,7 @@ function ProgressBar({
 }) {
   const pct = value != null ? Math.max(0, Math.min(1, value)) * 100 : 0;
   return (
-    <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(139,115,85,0.18)" }}>
+    <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(155,143,181,0.18)" }}>
       <div
         className={cn(
           "h-full rounded-full transition-all",
@@ -346,12 +346,12 @@ function SubBar({
           {formatPct(value)} · {coverage}/{totalCriteria}
         </span>
       </div>
-      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(139,115,85,0.18)" }}>
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(155,143,181,0.18)" }}>
         <div
           className="h-full rounded-full"
           style={{
             width: value != null ? `${pct}%` : "0%",
-            background: "rgba(59,56,87,0.45)",
+            background: "rgba(82,196,176,0.55)",
           }}
         />
       </div>

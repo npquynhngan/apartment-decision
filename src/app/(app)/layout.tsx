@@ -50,9 +50,9 @@ export default async function AppLayout({
       <header
         className="sticky top-0 z-40 border-b"
         style={{
-          background: "rgba(232, 220, 184, 0.92)",
-          backdropFilter: "blur(10px)",
-          borderColor: "rgba(139, 115, 85, 0.22)",
+          background: "rgba(35, 27, 60, 0.90)",
+          backdropFilter: "blur(12px)",
+          borderColor: "rgba(155, 143, 181, 0.18)",
           position: "relative",
           overflow: "hidden",
         }}

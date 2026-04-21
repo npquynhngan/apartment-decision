@@ -15,7 +15,7 @@ export default async function SignInPage({ searchParams }: Props) {
       className="flex min-h-screen items-center justify-center px-4"
       style={{
         background:
-          "linear-gradient(160deg, #2D2935 0%, #3B3857 55%, #354864 100%)",
+          "linear-gradient(160deg, #1C1530 0%, #271E42 55%, #1E2E48 100%)",
       }}
     >
       {/* Subtle paper noise on dark bg */}
@@ -47,13 +47,13 @@ export default async function SignInPage({ searchParams }: Props) {
         {/* Card */}
         <div
           className="rounded-[1.25rem] p-8 space-y-6 shadow-warm-lg"
-          style={{ background: "rgba(42, 39, 56, 0.95)", border: "1px solid rgba(200,180,255,0.1)" }}
+          style={{ background: "rgba(45, 36, 72, 0.95)", border: "1px solid rgba(155, 143, 181, 0.22)" }}
         >
           <div className="text-center space-y-1">
             <h1 className="font-heading font-bold text-2xl text-parchment tracking-tight">
               Apartment Decision
             </h1>
-            <p className="text-sm" style={{ color: "rgba(200,180,220,0.65)" }}>
+            <p className="text-sm" style={{ color: "rgba(155,143,181,0.80)" }}>
               Sign in with a magic link or your password.
             </p>
           </div>
