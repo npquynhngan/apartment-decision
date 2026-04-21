@@ -21,8 +21,8 @@ export function InfoPanel({ apartment }: { apartment: Apartment }) {
 
   if (editing) {
     return (
-      <div className="rounded-lg border p-4 space-y-4">
-        <h2 className="text-sm font-medium">Edit apartment</h2>
+      <div className="rounded-2xl bg-oatmeal shadow-warm p-4 space-y-4">
+        <h2 className="text-sm font-medium text-dusk-indigo">Edit apartment</h2>
         <ApartmentForm
           mode="edit"
           apartment={apartment}
@@ -33,10 +33,12 @@ export function InfoPanel({ apartment }: { apartment: Apartment }) {
   }
 
   return (
-    <div className="rounded-lg border p-4 space-y-2">
+    <div className="rounded-2xl bg-oatmeal shadow-warm p-4 space-y-2">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl font-semibold truncate">{apartment.name}</h1>
+          <h1 className="text-2xl font-heading font-bold text-ink-plum truncate">
+            {apartment.name}
+          </h1>
           {apartment.address && (
             <p className="text-sm text-muted-foreground">{apartment.address}</p>
           )}
@@ -103,7 +105,10 @@ export function InfoPanel({ apartment }: { apartment: Apartment }) {
       </div>
 
       {apartment.notes && (
-        <p className="text-sm whitespace-pre-wrap pt-2 border-t">
+        <p
+          className="text-sm whitespace-pre-wrap pt-2"
+          style={{ borderTop: "1px solid rgba(139,115,85,0.2)" }}
+        >
           {apartment.notes}
         </p>
       )}

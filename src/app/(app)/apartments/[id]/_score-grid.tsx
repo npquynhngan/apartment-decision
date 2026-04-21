@@ -104,8 +104,8 @@ export function ScoreGrid({
 
   if (criteria.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed p-8 text-center">
-        <p className="text-sm text-muted-foreground">
+      <div className="rounded-2xl bg-oatmeal shadow-warm p-10 text-center">
+        <p className="font-accent italic text-dusk-indigo text-lg">
           No criteria yet. Add some on the Criteria page first, then come back
           to score this apartment.
         </p>
@@ -120,7 +120,7 @@ export function ScoreGrid({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border p-4 bg-muted/30">
+      <div className="rounded-2xl bg-oatmeal shadow-warm p-4">
         <div className="grid grid-cols-3 gap-4 text-center">
           <ScoreStat
             label="Partner A"
@@ -148,28 +148,28 @@ export function ScoreGrid({
 
       {Object.entries(groups).map(([category, items]) => (
         <div key={category} className="space-y-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-dusk-indigo/60">
             {category}
           </h3>
-          <div className="rounded-lg border overflow-hidden divide-y">
+          <div className="rounded-2xl bg-oatmeal shadow-warm overflow-hidden divide-y" style={{ borderColor: "rgba(139,115,85,0.15)" }}>
             {items.map((c) => {
               const keyA = keyOf(c.id, "a");
               const keyB = keyOf(c.id, "b");
               return (
-                <div key={c.id} className="p-3 sm:p-4 space-y-2">
+                <div key={c.id} className="p-3 sm:p-4 space-y-2" style={{ borderColor: "rgba(139,115,85,0.15)" }}>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-sm">{c.name}</span>
+                    <span className="font-medium text-sm text-ink-plum">{c.name}</span>
                     {c.is_dealbreaker && (
-                      <span className="text-xs font-medium text-destructive bg-destructive/10 rounded px-1.5 py-0.5">
+                      <span className="text-xs font-medium text-destructive bg-destructive/10 rounded-lg px-2 py-0.5">
                         Dealbreaker
                       </span>
                     )}
                     {isAutoSource(c.auto_source) && (
-                      <span className="text-xs font-medium text-muted-foreground bg-muted rounded px-1.5 py-0.5">
+                      <span className="text-xs font-medium text-dusk-indigo/70 bg-oatmeal-deep rounded-lg px-2 py-0.5">
                         Auto · {autoSourceLabel(c.auto_source)}
                       </span>
                     )}
-                    <span className="text-xs text-muted-foreground ml-auto">
+                    <span className="text-xs text-dusk-indigo/55 ml-auto">
                       weight A {c.weight_a} · B {c.weight_b}
                     </span>
                   </div>
@@ -216,11 +216,12 @@ function ScoreStat({
 }) {
   return (
     <div>
-      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="text-xs text-dusk-indigo/60 font-medium uppercase tracking-wider">{label}</div>
       <div
         className={cn(
-          "text-xl font-semibold tabular-nums",
-          !highlight && "text-muted-foreground",
+          "text-2xl font-heading font-bold tabular-nums mt-0.5",
+          !highlight && "text-dusk-indigo/45",
+          highlight && "text-ink-plum",
           strikethrough && "line-through"
         )}
       >
@@ -252,16 +253,16 @@ function ScoreRow({
       <div className="flex items-center justify-between text-xs">
         <span
           className={cn(
-            highlight ? "font-medium" : "text-muted-foreground"
+            highlight ? "font-medium text-ink-plum" : "text-dusk-indigo/65"
           )}
         >
           {label}
           {highlight && " (you)"}
           {auto && value != null && (
-            <span className="ml-1.5 text-muted-foreground">· auto</span>
+            <span className="ml-1.5 text-dusk-indigo/45">· auto</span>
           )}
         </span>
-        {pending && <span className="text-muted-foreground">Saving…</span>}
+        {pending && <span className="text-dusk-indigo/50 font-accent italic">Saving…</span>}
       </div>
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((n) => (
@@ -270,10 +271,10 @@ function ScoreRow({
             type="button"
             onClick={() => onChange(n)}
             className={cn(
-              "h-8 flex-1 rounded border text-sm font-medium transition-colors",
+              "h-8 flex-1 rounded-xl text-sm font-medium transition-all duration-200",
               value === n
-                ? "bg-foreground text-background border-foreground"
-                : "bg-background hover:bg-muted"
+                ? "bg-sophie-rose text-parchment shadow-warm"
+                : "bg-parchment/60 text-dusk-indigo border border-border hover:bg-oatmeal hover:shadow-warm"
             )}
           >
             {n}

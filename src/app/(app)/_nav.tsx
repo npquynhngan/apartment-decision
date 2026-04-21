@@ -25,10 +25,10 @@ export function AppNav() {
             key={href}
             href={href}
             className={cn(
-              "border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+              "border-b-2 px-3 py-2 text-sm font-medium transition-all duration-200",
               active
-                ? "border-foreground text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+                ? "border-sophie-rose text-ink-plum"
+                : "border-transparent text-dusk-indigo/70 hover:text-ink-plum hover:border-oatmeal-deep"
             )}
           >
             {label}

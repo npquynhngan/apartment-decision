@@ -68,11 +68,13 @@ export default async function ApartmentsPage() {
     });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Apartments</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-3xl font-heading font-bold text-ink-plum tracking-tight">
+            Apartments
+          </h1>
+          <p className="text-sm text-dusk-indigo/75 mt-1">
             Ranked by combined score. Dealbreakers drop to the bottom.
           </p>
         </div>
@@ -82,35 +84,39 @@ export default async function ApartmentsPage() {
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            No apartments yet. Add your first one to start scoring.
+        <div className="rounded-2xl bg-oatmeal shadow-warm p-10 text-center">
+          <p className="font-accent italic text-dusk-indigo text-lg">
+            No apartments yet. The search begins...
           </p>
         </div>
       ) : (
         <ul className="space-y-2">
-          {rows.map((a) => (
-            <li key={a.id}>
+          {rows.map((a, i) => (
+            <li
+              key={a.id}
+              className="stagger-item"
+              style={{ "--i": i } as React.CSSProperties}
+            >
               <Link
                 href={`/apartments/${a.id}`}
-                className="block rounded-lg border p-4 transition-colors hover:bg-muted/40"
+                className="block rounded-2xl bg-oatmeal shadow-warm p-4 transition-all duration-200 hover:shadow-warm-md hover:bg-oatmeal-deep/60"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-medium truncate">{a.name}</span>
+                      <span className="font-medium text-ink-plum truncate">{a.name}</span>
                       {a.dealbreaker_failed && (
-                        <span className="text-xs font-medium text-destructive bg-destructive/10 rounded px-1.5 py-0.5">
+                        <span className="text-xs font-medium text-destructive bg-destructive/10 rounded-lg px-2 py-0.5">
                           Dealbreaker
                         </span>
                       )}
                     </div>
                     {a.address && (
-                      <p className="text-sm text-muted-foreground truncate mt-0.5">
+                      <p className="text-sm text-dusk-indigo/65 truncate mt-0.5">
                         {a.address}
                       </p>
                     )}
-                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-3 mt-1 text-xs text-dusk-indigo/55">
                       {a.rent != null && <span>{formatRent(a.rent)}/mo</span>}
                       {a.sqft != null && <span>{a.sqft} sqft</span>}
                       {a.viewing_at && (
@@ -125,10 +131,10 @@ export default async function ApartmentsPage() {
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <div className="text-2xl font-semibold tabular-nums">
+                    <div className="text-2xl font-heading font-bold tabular-nums text-ink-plum">
                       {formatScore(a.effective_score)}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-dusk-indigo/55">
                       A {formatScore(a.score_a)} · B {formatScore(a.score_b)}
                     </div>
                   </div>

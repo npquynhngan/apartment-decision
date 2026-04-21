@@ -69,9 +69,11 @@ export function AnalysisPanel({
   if (!enabled) {
     return (
       <section className="space-y-2">
-        <h2 className="text-lg font-semibold tracking-tight">AI analysis</h2>
-        <p className="text-sm text-muted-foreground">
-          Set <code className="text-xs">ANTHROPIC_API_KEY</code> in the server
+        <h2 className="text-xl font-heading font-bold text-ink-plum tracking-tight">
+          AI analysis
+        </h2>
+        <p className="text-sm text-dusk-indigo/65">
+          Set <code className="text-xs bg-oatmeal-deep px-1 rounded">ANTHROPIC_API_KEY</code> in the server
           environment to enable per-apartment analysis.
         </p>
       </section>
@@ -83,7 +85,9 @@ export function AnalysisPanel({
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <h2 className="text-lg font-semibold tracking-tight">AI analysis</h2>
+        <h2 className="text-xl font-heading font-bold text-ink-plum tracking-tight">
+          AI analysis
+        </h2>
         <Button
           onClick={handleGenerate}
           disabled={isPending}
@@ -91,7 +95,7 @@ export function AnalysisPanel({
           variant={analysis ? "outline" : "default"}
         >
           {isPending
-            ? "Analysing…"
+            ? "Looking around..."
             : analysis
               ? "Regenerate"
               : "Generate analysis"}
@@ -100,16 +104,22 @@ export function AnalysisPanel({
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
+      {isPending && (
+        <p className="font-accent italic text-dusk-indigo/70 text-base">
+          Looking around...
+        </p>
+      )}
+
       {!analysis && !isPending && !error && (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-dusk-indigo/65">
           Generate a Claude-written summary, pros, cons, and things to verify
           before viewing.
         </p>
       )}
 
       {analysis && (
-        <div className="rounded-lg border p-4 space-y-4">
-          <p className="text-sm leading-relaxed">{analysis.value.summary}</p>
+        <div className="rounded-2xl bg-oatmeal shadow-warm p-5 space-y-4">
+          <p className="text-base leading-relaxed text-ink-plum">{analysis.value.summary}</p>
 
           <div className="grid gap-4 sm:grid-cols-3">
             <AnalysisList
@@ -130,7 +140,7 @@ export function AnalysisPanel({
           </div>
 
           {generatedAt && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-dusk-indigo/50">
               Generated {generatedAt}
             </p>
           )}
@@ -151,22 +161,22 @@ function AnalysisList({
 }) {
   const dotClass =
     tone === "positive"
-      ? "bg-green-500"
+      ? "bg-meadow-sage"
       : tone === "negative"
-        ? "bg-destructive"
-        : "bg-muted-foreground";
+        ? "bg-sophie-rose"
+        : "bg-dusk-indigo/40";
 
   return (
     <div className="space-y-2">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-dusk-indigo/55">
         {label}
       </h3>
       {items.length === 0 ? (
-        <p className="text-xs text-muted-foreground">None.</p>
+        <p className="text-xs text-dusk-indigo/45 font-accent italic">None.</p>
       ) : (
         <ul className="space-y-1.5">
           {items.map((item, i) => (
-            <li key={i} className="flex gap-2 text-sm">
+            <li key={i} className="flex gap-2 text-sm text-ink-plum">
               <span
                 className={`mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 ${dotClass}`}
                 aria-hidden

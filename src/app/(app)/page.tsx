@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { CastleSilhouette } from "@/components/castle-silhouette";
 import { cn } from "@/lib/utils";
 import type {
   Apartment,
@@ -89,7 +90,7 @@ export default async function DashboardPage() {
         title="Welcome to Apartment Decision"
         body="Start by defining what matters to you — set up your scoring criteria and both partners will weight each one independently."
         ctaHref="/criteria"
-        ctaLabel="Set up criteria →"
+        ctaLabel="Set up criteria"
       />
     );
   }
@@ -97,10 +98,10 @@ export default async function DashboardPage() {
   if (apartments.length === 0) {
     return (
       <EmptyState
-        title="Add your first apartment"
+        title="The search begins..."
         body="Criteria are ready. Add apartments to start scoring and ranking them."
         ctaHref="/apartments/new"
-        ctaLabel="Add apartment →"
+        ctaLabel="Add an apartment"
       />
     );
   }
@@ -171,13 +172,15 @@ export default async function DashboardPage() {
     )[0];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up relative">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Ranking</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Apartments ranked by combined weighted score. Dealbreakers drop
-            to 0.
+          <h1 className="text-3xl font-heading font-bold text-ink-plum tracking-tight">
+            Ranking
+          </h1>
+          <p className="text-sm text-dusk-indigo/75 mt-1">
+            Apartments ranked by combined weighted score. Dealbreakers drop to
+            zero.
           </p>
         </div>
         <Button asChild size="sm" variant="outline">
@@ -188,11 +191,12 @@ export default async function DashboardPage() {
       {nextViewing && (
         <Link
           href={`/apartments/${nextViewing.id}`}
-          className="block rounded-lg border bg-muted/30 px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
+          className="block rounded-2xl px-4 py-3 text-sm shadow-warm transition-all duration-200 hover:shadow-warm-md"
+          style={{ background: "rgba(82,168,139,0.12)", border: "1px solid rgba(82,168,139,0.25)" }}
         >
-          <span className="text-muted-foreground">Next viewing: </span>
-          <span className="font-medium">{nextViewing.name}</span>
-          <span className="text-muted-foreground">
+          <span className="text-dusk-indigo/70">Next viewing: </span>
+          <span className="font-medium text-ink-plum">{nextViewing.name}</span>
+          <span className="text-dusk-indigo/70">
             {" "}
             · {formatNextViewing(nextViewing.viewing_at as string)}
           </span>
@@ -201,7 +205,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-3 sm:grid-cols-4">
         <Stat label="Apartments" value={ranked.length.toString()} />
-        <Stat label="Top score" value={formatPct(topScore)} />
+        <Stat label="Top score"  value={formatPct(topScore)} tone="gold" />
         <Stat
           label="Dealbreakers"
           value={dealbreakerCount.toString()}
@@ -222,8 +226,18 @@ export default async function DashboardPage() {
             apartment={a}
             totalCriteria={criteria.length}
             userSlot={profile.user_slot}
+            isTop={i === 0 && a.effective_score != null && !a.dealbreaker_failed}
+            style={{ "--i": i } as React.CSSProperties}
+            className="stagger-item"
           />
         ))}
+      </div>
+
+      {/* Atmospheric castle silhouette */}
+      <div className="relative h-0">
+        <div className="absolute bottom-0 right-0 translate-y-8">
+          <CastleSilhouette />
+        </div>
       </div>
     </div>
   );
@@ -241,9 +255,13 @@ function EmptyState({
   ctaLabel: string;
 }) {
   return (
-    <div className="space-y-4 max-w-md">
-      <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-      <p className="text-muted-foreground">{body}</p>
+    <div className="space-y-5 max-w-md animate-fade-up pt-8">
+      <h1 className="text-3xl font-heading font-bold text-ink-plum tracking-tight">
+        {title}
+      </h1>
+      <p className="font-accent italic text-dusk-indigo text-lg leading-relaxed">
+        {body}
+      </p>
       <Button asChild>
         <Link href={ctaHref}>{ctaLabel}</Link>
       </Button>
@@ -258,16 +276,20 @@ function Stat({
 }: {
   label: string;
   value: string;
-  tone?: "default" | "warning" | "muted";
+  tone?: "default" | "warning" | "muted" | "gold";
 }) {
   return (
-    <div className="rounded-lg border p-3">
-      <div className="text-xs text-muted-foreground">{label}</div>
+    <div className="rounded-2xl bg-oatmeal shadow-warm p-4">
+      <div className="text-xs text-dusk-indigo/65 font-medium uppercase tracking-wider">
+        {label}
+      </div>
       <div
         className={cn(
-          "text-xl font-semibold tabular-nums mt-0.5",
+          "text-2xl font-heading font-bold tabular-nums mt-1",
           tone === "warning" && "text-destructive",
-          tone === "muted" && "text-muted-foreground"
+          tone === "muted"   && "text-dusk-indigo/50",
+          tone === "gold"    && "text-ink-plum",
+          tone === "default" && "text-ink-plum"
         )}
       >
         {value}
@@ -285,11 +307,13 @@ function ProgressBar({
 }) {
   const pct = value != null ? Math.max(0, Math.min(1, value)) * 100 : 0;
   return (
-    <div className="h-2 rounded bg-muted overflow-hidden">
+    <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(139,115,85,0.18)" }}>
       <div
         className={cn(
-          "h-full transition-all",
-          dimmed ? "bg-muted-foreground/40" : "bg-foreground"
+          "h-full rounded-full transition-all",
+          dimmed
+            ? "bg-dusk-indigo/30"
+            : "bg-sophie-rose"
         )}
         style={{ width: `${pct}%` }}
       />
@@ -314,25 +338,45 @@ function SubBar({
   return (
     <div className="space-y-0.5">
       <div className="flex items-center justify-between text-xs">
-        <span
-          className={cn(
-            highlight ? "font-medium" : "text-muted-foreground"
-          )}
-        >
+        <span className={cn(highlight ? "font-medium text-ink-plum" : "text-dusk-indigo/65")}>
           Partner {label}
           {highlight && " (you)"}
         </span>
-        <span className="tabular-nums text-muted-foreground">
+        <span className="tabular-nums text-dusk-indigo/55">
           {formatPct(value)} · {coverage}/{totalCriteria}
         </span>
       </div>
-      <div className="h-1.5 rounded bg-muted overflow-hidden">
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(139,115,85,0.18)" }}>
         <div
-          className="h-full bg-muted-foreground/60"
-          style={{ width: value != null ? `${pct}%` : "0%" }}
+          className="h-full rounded-full"
+          style={{
+            width: value != null ? `${pct}%` : "0%",
+            background: "rgba(59,56,87,0.45)",
+          }}
         />
       </div>
     </div>
+  );
+}
+
+function CalciferFlame() {
+  return (
+    <svg
+      className="animate-calcifer inline-block"
+      width="16"
+      height="18"
+      viewBox="0 0 16 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <path
+        d="M8 1C8 1 5 5 5 8C5 8 3 7 4 5C2 7 2 10 4 12C4 12 3 13 2 13C2 15.5 5 17 8 17C11 17 14 15.5 14 13C13 13 12 12 12 12C14 10 14 7 12 5C13 7 11 8 11 8C11 5 8 1 8 1Z"
+        fill="var(--calcifer-gold)"
+        stroke="var(--sophie-rose)"
+        strokeWidth="0.5"
+      />
+    </svg>
   );
 }
 
@@ -341,6 +385,9 @@ function RankedRow({
   apartment: a,
   totalCriteria,
   userSlot,
+  isTop,
+  style,
+  className,
 }: {
   rank: number;
   apartment: Apartment &
@@ -351,38 +398,63 @@ function RankedRow({
     };
   totalCriteria: number;
   userSlot: "a" | "b" | null;
+  isTop: boolean;
+  style?: React.CSSProperties;
+  className?: string;
 }) {
   const isUnscored = a.effective_score == null;
 
   return (
     <Link
       href={`/apartments/${a.id}`}
-      className="block rounded-lg border p-4 transition-colors hover:bg-muted/40"
+      style={style}
+      className={cn(
+        "block rounded-2xl p-4 transition-all duration-200",
+        isTop
+          ? "shadow-warm-md hover:shadow-warm-lg"
+          : "shadow-warm hover:shadow-warm-md",
+        a.dealbreaker_failed
+          ? "dealbreaker-dimmed bg-oatmeal/80"
+          : "bg-oatmeal hover:bg-oatmeal-deep/60",
+        className
+      )}
     >
       <div className="flex items-start gap-4">
-        <div className="text-2xl font-bold tabular-nums text-muted-foreground w-8 shrink-0 text-center pt-0.5">
+        <div
+          className={cn(
+            "text-2xl font-heading font-bold tabular-nums w-8 shrink-0 text-center pt-0.5",
+            isTop ? "text-sophie-rose" : "text-dusk-indigo/45"
+          )}
+        >
           {rank}
         </div>
         <div className="flex-1 min-w-0 space-y-3">
           <div className="flex items-baseline justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-2 flex-wrap min-w-0">
-              <span className="font-medium truncate">{a.name}</span>
+              <span className="font-medium text-ink-plum truncate">{a.name}</span>
+              {isTop && <CalciferFlame />}
+              {isTop && (
+                <span className="text-xs font-heading italic text-sophie-rose">
+                  A contender
+                </span>
+              )}
               {a.dealbreaker_failed && (
-                <span className="text-xs font-medium text-destructive bg-destructive/10 rounded px-1.5 py-0.5">
+                <span className="text-xs font-medium text-destructive bg-destructive/10 rounded-lg px-2 py-0.5">
                   Dealbreaker
                 </span>
               )}
               {isUnscored && !a.dealbreaker_failed && (
-                <span className="text-xs font-medium text-muted-foreground bg-muted rounded px-1.5 py-0.5">
+                <span className="text-xs font-medium text-dusk-indigo/60 bg-oatmeal-deep/70 rounded-lg px-2 py-0.5">
                   Unscored
                 </span>
               )}
             </div>
             <div
               className={cn(
-                "text-2xl font-semibold tabular-nums",
-                a.dealbreaker_failed && "text-muted-foreground line-through",
-                isUnscored && "text-muted-foreground"
+                "text-2xl font-heading font-bold tabular-nums",
+                a.dealbreaker_failed && "text-dusk-indigo/40 line-through",
+                isUnscored && !a.dealbreaker_failed && "text-dusk-indigo/40",
+                !isUnscored && !a.dealbreaker_failed && "text-ink-plum"
               )}
             >
               {formatPct(a.effective_score)}
@@ -411,13 +483,13 @@ function RankedRow({
             />
           </div>
 
-          <div className="flex items-center gap-x-3 gap-y-1 flex-wrap text-xs text-muted-foreground">
+          <div className="flex items-center gap-x-3 gap-y-1 flex-wrap text-xs text-dusk-indigo/60">
             {a.address && <span className="truncate">{a.address}</span>}
             {a.rent != null && <span>{formatRent(a.rent)}/mo</span>}
             {a.sqft != null && <span>{a.sqft} sqft</span>}
             {a.disagreements > 0 && (
-              <span className="ml-auto text-amber-600 dark:text-amber-500">
-                ⚠ {a.disagreements}{" "}
+              <span className="ml-auto" style={{ color: "var(--sophie-rose)" }}>
+                {a.disagreements}{" "}
                 {a.disagreements === 1 ? "disagreement" : "disagreements"}
               </span>
             )}

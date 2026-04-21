@@ -52,7 +52,7 @@ function CriterionRow({ criterion }: { criterion: Criterion }) {
   }
 
   return (
-    <div className="rounded-lg border p-4 space-y-3">
+    <div className="rounded-2xl bg-oatmeal shadow-warm p-4 space-y-3">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs font-medium text-muted-foreground bg-muted rounded px-1.5 py-0.5">
@@ -178,8 +178,8 @@ export function CriteriaList({
 }) {
   if (criteria.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
-        No criteria yet — add your first one above.
+      <p className="font-accent italic text-dusk-indigo text-lg">
+        No criteria yet. What makes a home feel like home?
       </p>
     );
   }
@@ -193,7 +193,7 @@ export function CriteriaList({
     <div className="space-y-6">
       {Object.entries(groups).map(([category, items]) => (
         <div key={category} className="space-y-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-dusk-indigo/60">
             {category}
           </h3>
           <div className="space-y-2">
