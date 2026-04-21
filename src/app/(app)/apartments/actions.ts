@@ -108,7 +108,7 @@ export async function addApartment(
   if (error) return { error: (error as { message: string }).message };
 
   const newId = (data as { id: string }).id;
-  if (coords) {
+  if (coords || parsed.data.rent != null) {
     await recomputeApartmentCommuteScores(newId, household_id);
   }
 
@@ -139,11 +139,11 @@ export async function updateApartment(
 
   const { data: existing } = await supabase
     .from("apartments")
-    .select("address, household_id")
+    .select("address, rent, household_id")
     .eq("id", id)
     .single();
   const prev = existing as
-    | { address: string | null; household_id: string }
+    | { address: string | null; rent: number | null; household_id: string }
     | null;
   const prevAddress = prev?.address ?? null;
 
@@ -166,7 +166,8 @@ export async function updateApartment(
     .eq("id", id);
   if (error) return { error: (error as { message: string }).message };
 
-  if (addressChanged && coords && prev?.household_id) {
+  const rentChanged = parsed.data.rent !== (prev?.rent ?? null);
+  if (prev?.household_id && ((addressChanged && coords) || rentChanged)) {
     await recomputeApartmentCommuteScores(id, prev.household_id);
   }
 

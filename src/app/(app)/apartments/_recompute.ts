@@ -8,6 +8,7 @@ import {
   type AutoSource,
   type LatLng,
 } from "@/lib/commute";
+import { rentToScore } from "@/lib/cost";
 
 type UserWithCoords = {
   user_slot: "a" | "b" | null;
@@ -21,6 +22,7 @@ type ApartmentRow = {
   id: string;
   lat: number | null;
   lng: number | null;
+  rent: number | null;
 };
 
 function resolveSlotCoords(
@@ -60,13 +62,33 @@ async function computeForApartment(
   users: UserWithCoords[],
   criteria: CriterionRow[]
 ) {
-  if (apartment.lat == null || apartment.lng == null) return;
-  const aptCoords: LatLng = { lat: apartment.lat, lng: apartment.lng };
+  const aptCoords: LatLng | null =
+    apartment.lat != null && apartment.lng != null
+      ? { lat: apartment.lat, lng: apartment.lng }
+      : null;
 
   for (const c of criteria) {
     if (!c.auto_source || !AUTO_SOURCES.includes(c.auto_source as AutoSource)) {
       continue;
     }
+
+    if (c.auto_source === "cost") {
+      if (apartment.rent == null) continue;
+      const value = rentToScore(apartment.rent);
+      for (const user of users) {
+        if (!user.user_slot) continue;
+        await upsertAutoScore(supabase, {
+          apartment_id: apartment.id,
+          criterion_id: c.id,
+          user_slot: user.user_slot,
+          value,
+        });
+      }
+      continue;
+    }
+
+    // Commute-based sources
+    if (!aptCoords) continue;
     const source = c.auto_source as AutoSource;
     for (const user of users) {
       if (!user.user_slot) continue;
@@ -92,7 +114,7 @@ export async function recomputeApartmentCommuteScores(
   const [apartmentRes, usersRes, criteriaRes] = await Promise.all([
     supabase
       .from("apartments")
-      .select("id, lat, lng")
+      .select("id, lat, lng, rent")
       .eq("id", apartment_id)
       .single(),
     supabase
@@ -119,7 +141,7 @@ export async function recomputeHouseholdCommuteScores(household_id: string) {
   const [apartmentsRes, usersRes, criteriaRes] = await Promise.all([
     supabase
       .from("apartments")
-      .select("id, lat, lng")
+      .select("id, lat, lng, rent")
       .eq("household_id", household_id),
     supabase
       .from("users")

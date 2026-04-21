@@ -108,10 +108,12 @@ export function AddCriterionForm() {
           <option value="manual">Manual (score yourself)</option>
           <option value="commute_home">Distance to home</option>
           <option value="commute_work">Distance to work</option>
+          <option value="cost">Rent cost (3500–4500 range)</option>
         </select>
         <p className="text-xs text-muted-foreground">
-          Auto-scored criteria compute a 1–5 score from straight-line distance
-          and can be overridden on individual apartments.
+          Auto-scored criteria compute a 1–5 score automatically and can be
+          overridden on individual apartments. Commute uses straight-line
+          distance; rent cost buckets the rent into 5 quintiles (3500–4500).
         </p>
       </div>
 

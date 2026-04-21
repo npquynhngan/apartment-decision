@@ -148,6 +148,7 @@ function CriterionRow({ criterion }: { criterion: Criterion }) {
             <option value="manual">Manual</option>
             <option value="commute_home">Distance to home</option>
             <option value="commute_work">Distance to work</option>
+            <option value="cost">Rent cost</option>
           </select>
         </label>
 
