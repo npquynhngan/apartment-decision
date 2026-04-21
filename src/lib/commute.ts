@@ -33,11 +33,12 @@ export function distanceToScore(km: number): 1 | 2 | 3 | 4 | 5 {
   return 1;
 }
 
-export const AUTO_SOURCES = ["commute_home", "commute_work", "cost"] as const;
+export const AUTO_SOURCES = ["commute_home", "commute_work", "cost", "size"] as const;
 export type AutoSource = (typeof AUTO_SOURCES)[number];
 
 export function autoSourceLabel(source: AutoSource): string {
   if (source === "commute_home") return "Distance to home";
   if (source === "commute_work") return "Distance to work";
+  if (source === "size") return "Size & layout";
   return "Rent cost";
 }

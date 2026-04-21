@@ -73,6 +73,9 @@ async function computeForApartment(
       continue;
     }
 
+    // 'size' is handled separately by recomputeSizeScore — skip here
+    if (c.auto_source === "size") continue;
+
     if (c.auto_source === "cost") {
       if (apartment.rent == null) continue;
       const value = rentToScore(apartment.rent);
