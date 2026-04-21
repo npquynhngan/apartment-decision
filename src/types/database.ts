@@ -104,6 +104,8 @@ export interface Database {
           viewing_at: string | null
           sqft: number | null
           scrape_data: Json | null
+          ai_analysis: Json | null
+          ai_analysis_at: string | null
           created_at: string
         }
         Insert: {
@@ -119,6 +121,8 @@ export interface Database {
           viewing_at?: string | null
           sqft?: number | null
           scrape_data?: Json | null
+          ai_analysis?: Json | null
+          ai_analysis_at?: string | null
           created_at?: string
         }
         Update: {
@@ -134,6 +138,8 @@ export interface Database {
           viewing_at?: string | null
           sqft?: number | null
           scrape_data?: Json | null
+          ai_analysis?: Json | null
+          ai_analysis_at?: string | null
           created_at?: string
         }
       }

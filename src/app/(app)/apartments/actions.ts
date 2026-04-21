@@ -2,8 +2,14 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { geocodeAddress } from "@/lib/geocode";
+import {
+  generateApartmentAnalysis,
+  isLlmEnabled,
+  type AiAnalysis,
+} from "@/lib/llm";
 import { fetchAndParseListing, type ListingMeta } from "@/lib/scrape";
 import { recomputeApartmentCommuteScores } from "./_recompute";
+import type { Apartment, Criterion, Score } from "@/types/database";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -227,4 +233,58 @@ export async function scrapeListing(
   const meta = await fetchAndParseListing(parsed.data);
   if (!meta) return { error: "Could not fetch that listing" };
   return { data: meta };
+}
+
+export async function analyzeApartment(
+  apartment_id: string
+): Promise<{ data?: AiAnalysis; error?: string }> {
+  if (!isLlmEnabled()) {
+    return { error: "Analysis is not configured on this server." };
+  }
+  const id = z.string().uuid().safeParse(apartment_id);
+  if (!id.success) return { error: "Invalid apartment id" };
+
+  const household_id = await getHouseholdId();
+  if (!household_id) return { error: "Not in a household" };
+
+  const supabase = await createClient();
+  const { data: apartmentData } = await supabase
+    .from("apartments")
+    .select("*")
+    .eq("id", id.data)
+    .eq("household_id", household_id)
+    .single();
+  const apartment = apartmentData as Apartment | null;
+  if (!apartment) return { error: "Apartment not found" };
+
+  const [{ data: criteriaData }, { data: scoresData }] = await Promise.all([
+    supabase
+      .from("criteria")
+      .select("*")
+      .eq("household_id", household_id)
+      .order("category")
+      .order("position")
+      .order("created_at"),
+    supabase.from("scores").select("*").eq("apartment_id", id.data),
+  ]);
+  const criteria = (criteriaData ?? []) as Criterion[];
+  const scores = (scoresData ?? []) as Score[];
+
+  const result = await generateApartmentAnalysis(apartment, criteria, scores);
+  if ("error" in result) return { error: result.error };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: updateError } = await (supabase as any)
+    .from("apartments")
+    .update({
+      ai_analysis: result.data,
+      ai_analysis_at: new Date().toISOString(),
+    })
+    .eq("id", id.data);
+  if (updateError) {
+    return { error: (updateError as { message: string }).message };
+  }
+
+  revalidatePath(`/apartments/${id.data}`);
+  return { data: result.data };
 }

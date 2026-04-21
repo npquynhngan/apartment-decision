@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isLlmEnabled } from "@/lib/llm";
 import type {
   Apartment,
   Criterion,
@@ -11,6 +12,7 @@ import type {
 } from "@/types/database";
 import { AddReminderForm } from "../../reminders/_add-form";
 import { ReminderList } from "../../reminders/_reminder-list";
+import { AnalysisPanel } from "./_analysis-panel";
 import { InfoPanel } from "./_info-panel";
 import { ScoreGrid } from "./_score-grid";
 
@@ -99,6 +101,13 @@ export default async function ApartmentDetailPage({
         criteria={criteria}
         initialScores={scores}
         userSlot={profile.user_slot}
+      />
+
+      <AnalysisPanel
+        apartmentId={apartment.id}
+        enabled={isLlmEnabled()}
+        initialAnalysis={apartment.ai_analysis}
+        initialAt={apartment.ai_analysis_at}
       />
 
       <section className="space-y-3">
