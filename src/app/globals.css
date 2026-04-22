@@ -117,7 +117,7 @@
 
   /* font families */
   --font-sans:    var(--font-jost), system-ui, sans-serif;
-  --font-heading: var(--font-jim-nightshade), Georgia, serif;
+  --font-heading: var(--font-rakkas), Georgia, serif;
   --font-accent:  var(--font-gloock), Georgia, serif;
   --font-mono:    ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -229,7 +229,7 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    font-weight: 400;      /* Jim Nightshade is weight-400 only */
+    font-weight: 400;      /* Rakkas is weight-400 only */
     letter-spacing: 0;
     line-height: 1.15;
   }

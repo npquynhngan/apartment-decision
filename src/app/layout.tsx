@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Jim_Nightshade, Jost, Gloock } from "next/font/google";
+import { Rakkas, Jost, Gloock } from "next/font/google";
 import "./globals.css";
 
-const jimNightshade = Jim_Nightshade({
-  variable: "--font-jim-nightshade",
+const rakkas = Rakkas({
+  variable: "--font-rakkas",
   subsets: ["latin"],
   weight: ["400"],
   display: "swap",
@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jimNightshade.variable} ${jost.variable} ${gloock.variable} h-full antialiased`}
+      className={`${rakkas.variable} ${jost.variable} ${gloock.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
