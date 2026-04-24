@@ -125,7 +125,8 @@ export default async function ApartmentsPage() {
                       {a.viewing_at && (
                         <span>
                           Viewing{" "}
-                          {new Date(a.viewing_at).toLocaleString(undefined, {
+                          {new Date(a.viewing_at).toLocaleString("en-SG", {
+                            timeZone: "Asia/Singapore",
                             dateStyle: "medium",
                             timeStyle: "short",
                           })}

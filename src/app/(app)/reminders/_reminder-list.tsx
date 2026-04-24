@@ -16,6 +16,7 @@ type ReminderItem = {
 
 function formatDue(iso: string) {
   return new Intl.DateTimeFormat("en-SG", {
+    timeZone: "Asia/Singapore",
     weekday: "short",
     day: "numeric",
     month: "short",

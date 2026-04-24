@@ -25,6 +25,7 @@ function formatTimestamp(iso: string | null) {
   if (!iso) return null;
   try {
     return new Intl.DateTimeFormat("en-SG", {
+      timeZone: "Asia/Singapore",
       dateStyle: "medium",
       timeStyle: "short",
     }).format(new Date(iso));

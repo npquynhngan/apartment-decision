@@ -36,6 +36,7 @@ function formatNextViewing(iso: string) {
     relative = rtf.format(Math.round(diffMin / 60), "hour");
   else relative = rtf.format(Math.round(diffMin / (60 * 24)), "day");
   const when = new Intl.DateTimeFormat("en-SG", {
+    timeZone: "Asia/Singapore",
     weekday: "short",
     day: "numeric",
     month: "short",

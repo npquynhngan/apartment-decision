@@ -7,6 +7,7 @@ import type { Apartment, UserProfile } from "@/types/database";
 
 function formatDateTime(iso: string) {
   return new Intl.DateTimeFormat("en-SG", {
+    timeZone: "Asia/Singapore",
     weekday: "short",
     day: "numeric",
     month: "short",

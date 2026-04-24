@@ -51,7 +51,13 @@ const optionalDateTime = z
   .optional()
   .transform((v) => {
     if (v === undefined || v.trim() === "") return null;
-    const d = new Date(v);
+    const trimmed = v.trim();
+    // datetime-local input is naive ("YYYY-MM-DDTHH:mm"); interpret as SGT (UTC+8)
+    // so the stored UTC timestamp matches what the user typed in Singapore time,
+    // independent of the server's local timezone.
+    const hasSeconds = /T\d{2}:\d{2}:\d{2}$/.test(trimmed);
+    const withTz = hasSeconds ? `${trimmed}+08:00` : `${trimmed}:00+08:00`;
+    const d = new Date(withTz);
     return Number.isNaN(d.getTime()) ? null : d.toISOString();
   });
 

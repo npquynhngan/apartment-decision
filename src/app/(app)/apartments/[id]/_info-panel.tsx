@@ -85,7 +85,8 @@ export function InfoPanel({ apartment }: { apartment: Apartment }) {
           <span>
             <span className="text-muted-foreground">Viewing </span>
             <span className="font-medium">
-              {new Date(apartment.viewing_at).toLocaleString(undefined, {
+              {new Date(apartment.viewing_at).toLocaleString("en-SG", {
+                timeZone: "Asia/Singapore",
                 dateStyle: "medium",
                 timeStyle: "short",
               })}
