@@ -17,7 +17,10 @@ const addSchema = z.object({
     .string()
     .min(1, "Due date is required")
     .transform((v, ctx) => {
-      const d = new Date(v);
+      // datetime-local input is naive; interpret as SGT (UTC+8)
+      const hasSeconds = /T\d{2}:\d{2}:\d{2}$/.test(v.trim());
+      const withTz = hasSeconds ? `${v.trim()}+08:00` : `${v.trim()}:00+08:00`;
+      const d = new Date(withTz);
       if (Number.isNaN(d.getTime())) {
         ctx.addIssue({ code: "custom", message: "Invalid due date" });
         return z.NEVER;
